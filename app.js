@@ -3,6 +3,7 @@ const mongoose=require("mongoose")
 const bcrypt=require("bcrypt")
 const cors=require("cors")
 const loginModel = require("./models/admin")
+const doctorModel = require("./models/doctor")
 const app=express()
 app.use(cors())
 app.use(express.json())
@@ -43,7 +44,19 @@ app.post("/adminSignIn",(req,res)=>{
     ).catch()
 })
 
-
+app.post("/addDoctor",(req,res)=>{
+    let input=req.body
+    let token=req.headers.token
+    jwt.verify(token,"Patient-app",(error,decoded)=>{
+        if (decoded && decoded.email) {
+            let result=new doctorModel(input)
+            result.save()
+            res.json({"status":"success"})
+        } else {
+            res.json({"status":"invalid authenticatiion"})
+        }
+    })
+})
 
 app.listen(5050,()=>{
     console.log("server started")
